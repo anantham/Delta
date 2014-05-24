@@ -1,0 +1,4 @@
+If you create a file in your repository named .gitignore, 
+Git uses it to determine which files and directories to ignore, before you make a commit
+
+i have no files which are to be ignored in this repository
