@@ -15,6 +15,7 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	
 	int counter =0;
+	int i;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,15 @@ public class MainActivity extends Activity {
 		return true;
 	}
 	
+	public void multi(View v){
+		for(i=0;i<5;i++){
+			Scramble(v);
+		}
+	}
+	
 	public void Scramble(View v){
+		
+			
 		
 		counter=counter+1;
 		
@@ -95,9 +104,24 @@ public class MainActivity extends Activity {
 		//we define the duration the toast should be visible
 		int duration = Toast.LENGTH_SHORT;
 
-		Toast toast = Toast.makeText(context, text, duration);
-		toast.show();
-			
+		final Toast toast = Toast.makeText(context, text, duration);
+		if(i==4){
+			toast.show();
+		}
+		
+		
+		/*
+		 // as the toast seems to be appearing too slowly, the effect can be controlled using toast.cancel(); this stops the toast instantly when called
+		 // here LENGTH_SHORT has a value of 2000 miliseconds we use this to make it shorter 
+		 Handler handler = new Handler();
+         handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                toast.cancel(); 
+            }
+     }, 7000);
+		*/
+		
 		//now we get the string that has to replace the previous one
 		String n =new String(charlist);
 		
@@ -105,7 +129,8 @@ public class MainActivity extends Activity {
 		hello.setText(n);
 		
 		
-		
 	}
+	
+	
 
 }

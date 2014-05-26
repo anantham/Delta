@@ -25,7 +25,7 @@
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="87dp"
-        android:onClick="Scramble"
+        android:onClick="multi"
         android:text="@string/button" />
 
 </RelativeLayout>
