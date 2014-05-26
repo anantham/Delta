@@ -6,7 +6,6 @@ import java.util.Random;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
@@ -42,34 +41,19 @@ public class MainActivity extends Activity {
 		
 		counter=counter+1;
 		
-		//using the id of hello world! we make the text view handle hello
+		
 		TextView hello =(TextView)findViewById(R.id.textView2);
 		
-		// we get the string stored as value at this before mentioned position
+		
 	    String str = hello.getText().toString();
 	    
-	    Log.i("TEST - string  to be scrambled",str);
-	    
-	     //METHOD 1 - fail 
-	     //REASON:: I got gibrish which is the Class name followed by the memory address of the object -this comes when i print the string from
-	     // the char list using tostring
-	    //FIX: http://stackoverflow.com/questions/13505274/java-println-with-char-array-gives-gibberish
-	    
-	    //METHOD 2
-	   
 	    
 	    //store the string that is right now being displayed, and that which is going to be scrambled as a Character List!!
 	    char[] charlist = str.toCharArray();
 	    
-	    //this is A WAY to convert the char list back into a string PROPERLY, unlike in the last method which failed
-	    //String array=Arrays.toString(charlist);
-	    //Log.i("TEST - array  to be scrambled",array);
-	    
-	    // using linear congruential generator, we use some start or "seed" number which ideally is "genuinely unpredictable", and which in practice is "unpredictable enough".
 	 		Random r = new Random();
 	 		
 	    //a number between [65,80) inclusive of 65 exclusive of 80
-	 	//this is as the .nextInt(N) function gives us a number between 0(inclusive) and N(exclusive)
 	 		int value = r.nextInt(12 - 0) + 0;
 	 		
 	 	// now temp1 and temp2 are the characters which are to be switched	
@@ -90,14 +74,6 @@ public class MainActivity extends Activity {
 				charlist[value+1]=temp1;
 			}
 	    
-	    
-		//we make this toast to inform the user we have scrambled the text
-		
-		//this defines where this toast should be displayed.. i used the getApplicationContext because it associates with the application 
-			//where as the Activity context is associated with the activity and could possibly be destroyed many times as the activity is destroyed during screen orientation changes and such.
-			//by the activity context i mean 'this' which can also be used
-			//and we dont use getBaseContext() as it is used to access context of a class which is not an activity
-			// SOURCES:http://stackoverflow.com/questions/1026973/android-whats-the-difference-between-the-various-methods-to-get-a-context
 		Context context = getApplicationContext();
 		// we define the text to be displayed
 		CharSequence text = "Hello World! has been SCRAMBLED "+counter+" number of times";
@@ -109,18 +85,6 @@ public class MainActivity extends Activity {
 			toast.show();
 		}
 		
-		
-		/*
-		 // as the toast seems to be appearing too slowly, the effect can be controlled using toast.cancel(); this stops the toast instantly when called
-		 // here LENGTH_SHORT has a value of 2000 miliseconds we use this to make it shorter 
-		 Handler handler = new Handler();
-         handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                toast.cancel(); 
-            }
-     }, 7000);
-		*/
 		
 		//now we get the string that has to replace the previous one
 		String n =new String(charlist);
