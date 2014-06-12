@@ -3,6 +3,7 @@ package com.delta.deltatimer;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.ProgressBar;
 
 
 public class TimerScreen extends Activity{
+	// so all functions inside this Activity has access to it
+	private Handler handler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,9 @@ public class TimerScreen extends Activity{
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
+		
+		//we need to get a handler associated with the main thread (we declared it therein the Main thread)
+		handler = new Handler();
 	}
 	
 
@@ -49,8 +55,6 @@ public class TimerScreen extends Activity{
 		bar.setProgress(0);
 		//now we create a thread, link it to a defined "task" and start it
 		new Thread(new Task()).start();
-		// keep in mind that every time the button is clicked a "new" task is started ie a new independent thread
-		//is set in motion which also runs along side the previous threads updating the progress Bar
 	}
 	
 	class Task implements Runnable{
@@ -62,13 +66,29 @@ public class TimerScreen extends Activity{
 			// TODO Auto-generated method stub
 			for(int i=0;i<=100;i++){
 				final int value=i;
-				//catch any execeptions thrown by the thread when its "put to sleep" ie thread is paused
+				//catch any execeptions thrown by the thread when its "put to sleep"
 				try{
 					Thread.sleep(100);
-				} catch(InterruptedException e){
+				} catch(InterruptedException e){ //here we are making the thread support its own interruption
+					//an interrupt is used to inform the thread it should stop what its doing and it should do
+					//something else
 					e.printStackTrace();
+					//this method of handling the interrupt is okay if interrupts happens frequently
+					//but in some cases there isnt a interruption for quite some time
+					//then we check using if(Thread.interrupted()){//handle the interruption}
+					//keep in mind that the interrupt status flag is reset (cleared) when the status is checked
+					// and it is set by the Thread.interrupt
 				}
-				bar.setProgress(value);
+				// now here we add a runnable object into the message queue 
+				// here the handler takes this object and shedules its execution
+				// its execution will occur in the thread to with the handler is associated
+				// we define the runnable object as an anonymous inner class
+				handler.post(new Runnable(){
+					@Override
+					public void run(){
+						bar.setProgress(value);
+					}
+				});
 			}
 		}
 		
