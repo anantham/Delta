@@ -49,8 +49,6 @@ public class TimerScreen extends Activity{
 		bar.setProgress(0);
 		//now we create a thread, link it to a defined "task" and start it
 		new Thread(new Task()).start();
-		// keep in mind that every time the button is clicked a "new" task is started ie a new independent thread
-		//is set in motion which also runs along side the previous threads updating the progress Bar
 	}
 	
 	class Task implements Runnable{
@@ -60,9 +58,10 @@ public class TimerScreen extends Activity{
 		@Override  //this is the method inherited from the class Runnable
 		public void run() {
 			// TODO Auto-generated method stub
+			/*
 			for(int i=0;i<=100;i++){
 				final int value=i;
-				//catch any execeptions thrown by the thread when its "put to sleep" ie thread is paused
+				//catch any execeptions thrown by the thread when its "put to sleep"
 				try{
 					Thread.sleep(100);
 				} catch(InterruptedException e){
@@ -70,6 +69,7 @@ public class TimerScreen extends Activity{
 				}
 				bar.setProgress(value);
 			}
+			*/
 		}
 		
 	}
