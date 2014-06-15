@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="#000000"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -15,28 +15,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="66dp"
+        android:layout_marginTop="58dp"
         android:text="@string/timer"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textColor="#FFFFFF"
         android:textSize="40sp" />
 
     <Button
-        android:id="@+id/start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/textView1"
-        android:onClick="start"
-        android:text="@string/start"
-        android:textColor="#FFFFFF" />
-
-    <Button
         android:id="@+id/reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="18dp"
+        android:layout_marginTop="56dp"
+        android:layout_toRightOf="@+id/pause"
         android:onClick="reset"
         android:text="@string/reset"
         android:textColor="#FFFFFF" />
@@ -45,11 +37,32 @@
         android:id="@+id/pause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/reset"
-        android:layout_alignBottom="@+id/reset"
+        android:layout_alignBaseline="@+id/start"
+        android:layout_alignBottom="@+id/start"
         android:layout_centerHorizontal="true"
         android:onClick="pause"
         android:text="@string/pause"
         android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/reset"
+        android:layout_alignBottom="@+id/reset"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@+id/pause"
+        android:onClick="start"
+        android:text="@string/start"
+        android:textColor="#FFFFFF" />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/reset"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="35dp" >
+    </ListView>
 
 </RelativeLayout>

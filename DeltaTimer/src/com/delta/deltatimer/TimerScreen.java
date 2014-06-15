@@ -1,5 +1,8 @@
 package com.delta.deltatimer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -8,6 +11,8 @@ import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -30,6 +35,13 @@ public class TimerScreen extends Activity{
 	
 	//the handler which is used to add runnable's to the message queue, this happens on a seperate thread, created here
 	private Handler handler = new Handler();
+	
+	// the list of strings which cointain the the LAPS
+	List<String> finalresult = new ArrayList<String>();
+
+	// the adapter used to set the listview
+	ArrayAdapter<String> adapter;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +53,7 @@ public class TimerScreen extends Activity{
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-
+		
 	}
 	/**
 	 * A placeholder fragment containing a simple view.
@@ -91,19 +103,37 @@ public class TimerScreen extends Activity{
 		//here buffertime is the time spent while in the paused state, intially that is zero so is milisecondstime
 		//but after its paused
 		buffertime=buffertime+milisecondstime;
-		// basically removes all pending posts of "updateTimerThread" in the message queue
+		// basically removes all pending posts of "updateTimer" in the message queue
 		//ie stops the updating to the textview, currenttime
 		handler.removeCallbacks(updateTimer);
 	}
 	
 	//function called when reset button is called
 	public void reset(View v){
-	pause(v);
-	starttime =0L;
-	milisecondstime =0L;
-	buffertime=0L;
-	newtime=0L;
-	start(v);
+		// we stop the timer
+		pause(v);
+		//we add the value of the timer at that instant to to list
+		//so first we establish the handle on the list view
+		ListView list = (ListView)findViewById(android.R.id.list);
+		
+		int sec=(int)(newtime/1000);
+		int mins=sec/60;
+		sec=sec%60;
+		int milisec=(int)(newtime%1000);
+		
+		finalresult.add(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
+
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finalresult);
+		
+		//cause  of crash in reset button!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+		list.setAdapter(adapter);  
+	
+		// we reset the values of all the timer variables to default
+		starttime =0L;
+		milisecondstime =0L;
+		buffertime=0L;
+		newtime=0L;
+		currenttime.setText("0:00:000");
 	}
 	
 	//now we define the updatetimerthread - a runnable object
@@ -116,10 +146,10 @@ public class TimerScreen extends Activity{
 			// sets the currenttime handler to point to textview1 so we can set the text there
 			currenttime = (TextView) findViewById(R.id.textView1);
 			
-			//this the difference between how much time actually elapsed to how much
+			//this the difference between how much time actually elapsed to how much time the timer has been running (ie starttime)
 			milisecondstime=SystemClock.uptimeMillis()-starttime;
 			
-			//but we have to consider the buffertime
+			//but we have to consider both buffertime and milisecondstime, thus the sum of these both give us the timertime
 			newtime=buffertime+milisecondstime;
 			
 			int sec=(int)(newtime/1000);
