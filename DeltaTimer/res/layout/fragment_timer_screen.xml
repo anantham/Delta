@@ -25,33 +25,31 @@
         android:id="@+id/start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="53dp"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/textView1"
         android:onClick="start"
         android:text="@string/start"
         android:textColor="#FFFFFF" />
 
     <Button
-        android:id="@+id/pause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/start"
-        android:layout_alignBottom="@+id/start"
-        android:layout_centerHorizontal="true"
-        android:text="@string/pause"
-        android:onClick="pause"
-        android:textColor="#FFFFFF" />
-
-    <Button
         android:id="@+id/reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/pause"
-        android:layout_alignBottom="@+id/pause"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/textView1"
+        android:onClick="reset"
         android:text="@string/reset"
+        android:textColor="#FFFFFF" />
+
+    <Button
+        android:id="@+id/pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/reset"
+        android:layout_alignBottom="@+id/reset"
+        android:layout_centerHorizontal="true"
+        android:onClick="pause"
+        android:text="@string/pause"
         android:textColor="#FFFFFF" />
 
 </RelativeLayout>

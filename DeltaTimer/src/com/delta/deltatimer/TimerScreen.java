@@ -25,7 +25,10 @@ public class TimerScreen extends Activity{
 	long buffertime=0L;
 	long newtime=0L;
 	
-	//the handler which is used to add runnable's to the message queue  
+	//the flag variable for the timer,its value is 0 when its NOT running,and 1 when it is 
+	int flag=0;
+	
+	//the handler which is used to add runnable's to the message queue, this happens on a seperate thread, created here
 	private Handler handler = new Handler();
 
 	@Override
@@ -57,30 +60,67 @@ public class TimerScreen extends Activity{
 		}
 	}
 	
+	//function called when start button is called
 	public void start(View v){
+		// to make sure nothing happens if the user clicks start while the timer is running
+		if(flag==1){
+			return;
+		}
+		
+		//timer is started
+		flag=1;
+				
 		//milliseconds since boot, not counting time spent in deep sleep 
 		//this is used as a BASE, we count FROM this time
 		starttime=SystemClock.uptimeMillis();
 		//adds the "updateTimerThread" runnable object after "0" miliseconds of delay
-		handler.postDelayed(updateTimerThread, 0);
+		//thus this ensures the time keeps getting updated
+		handler.postDelayed(updateTimer, 0);
+		
 	}
 	
+	//function called when pause button is called
 	public void pause(View v){
+		// to make sure nothing happens if the user clicks pause while the timer is already paused
+		if(flag==0){
+			return;
+		}
+		
+		//timer is paused
+		flag=0;
+		//here buffertime is the time spent while in the paused state, intially that is zero so is milisecondstime
+		//but after its paused
 		buffertime=buffertime+milisecondstime;
 		// basically removes all pending posts of "updateTimerThread" in the message queue
-		handler.removeCallbacks(updateTimerThread);
+		//ie stops the updating to the textview, currenttime
+		handler.removeCallbacks(updateTimer);
 	}
+	
+	//function called when reset button is called
+	public void reset(View v){
+	starttime =0L;
+	milisecondstime =0L;
+	buffertime=0L;
+	newtime=0L;
+	//we are re-starting the timer, so its running
+	flag=1;
+	start(v);
+	}
+	
 	//now we define the updatetimerthread - a runnable object
-	private Runnable updateTimerThread = new Runnable() {
-		//after the fragment has been instantiated we can safely link the handles to the respective widgets
+	private Runnable updateTimer = new Runnable() {
 		
+		//this code is set to run on a thread created when the handler was created
 
 		@Override
 		public void run() {
+			// sets the currenttime handler to point to textview1 so we can set the text there
 			currenttime = (TextView) findViewById(R.id.textView1);
 			
+			//this the difference between how much time actually elapsed to how much
 			milisecondstime=SystemClock.uptimeMillis()-starttime;
 			
+			//but we have to consider the buffertime
 			newtime=buffertime+milisecondstime;
 			
 			int sec=(int)(newtime/1000);
