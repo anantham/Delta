@@ -1,7 +1,6 @@
 package com.delta.deltatimer;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -36,14 +35,14 @@ public class TimerScreen extends Activity{
 	//the handler which is used to add runnable's to the message queue, this happens on a seperate thread, created here
 	private Handler handler = new Handler();
 	
-	// the list of strings which cointain the the LAPS
-	List<String> finallist= new ArrayList<String>();
-
-	// the adapter used to set the listview
-	ArrayAdapter<String> adapter;
-	
-	//this is the handle for listview to be used globally
+	//the handle onto the listview
 	ListView list;
+	
+	//the list of lap lengths stored as arrays
+    ArrayList<String> finallist=new ArrayList<String>();
+
+    //the no of laps recorded can be kept count of
+    int laps=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,22 +114,31 @@ public class TimerScreen extends Activity{
 	
 	//function called when reset button is called
 	public void reset(View v){
+		
 		// we stop the timer
 		pause(v);
-		
+		// we set a lap to be stored
+		laps++;
+
+		//here we break up the current time into output format min:Sec:milisec
 		int sec=(int)(newtime/1000);
 		int mins=sec/60;
 		sec=sec%60;
 		int milisec=(int)(newtime%1000);
+		//we get the element which is to be added to the list
+		finallist.add("Lap Number-"+laps+" "+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
 		
-		finallist.add(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
-		
-		
+		finallist.add("0:00:000");
 		// made a new adapter with this updated list
-		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finallist);
+		//this refers to activity context
+		//android.R.layout.simple_list_item_1 simple_list_item_1 is the layout in android.R.layout.
+		//android.R.id.textView1 refers to the android resource id.
+		//finallist is a string array for the lap durations
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,R.id.textView1,finallist);
 
+		//UNABLE TO SET THE LIST WITH THIS ADAPTER
 		//cause  of crash in reset button!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-		list.setAdapter(adapter); 
+		//list.setAdapter(adapter); 
 	
 		// we reset the values of all the timer variables to default
 		starttime =0L;
@@ -159,11 +167,13 @@ public class TimerScreen extends Activity{
 			//but we have to consider both buffertime and milisecondstime, thus the sum of these both give us the timertime
 			newtime=buffertime+milisecondstime;
 			
+			//we obtain the breakup of the time in min, secs, and miliseconds
 			int sec=(int)(newtime/1000);
 			int mins=sec/60;
 			sec=sec%60;
 			int milisec=(int)(newtime%1000);
 			
+			//stores the time in the appropriate format into currenttime
 			currenttime.setText(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
 			
 			//calls its self so this thread is self updating, thus continously keeping the timer updated
