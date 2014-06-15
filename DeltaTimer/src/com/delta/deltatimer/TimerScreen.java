@@ -4,15 +4,29 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 
 
 public class TimerScreen extends Activity{
-	// so all functions inside this Activity has access to it
-	private Handler handler;
+	//we use private in the following variables, as they will be used inside the TimerScreen Class
+
+	
+	//now the timer value, ie the Current Recorded Time thats going to be recorded in textview (the output format)
+	TextView currenttime;
+	
+	//now the timer value, ie the Current Recorded Time thats going to be manipulated (the working format)
+	//they are done using various variables ---
+	long starttime =0L;
+	long milisecondstime =0L;
+	long buffertime=0L;
+	long newtime=0L;
+	
+	//the handler which is used to add runnable's to the message queue  
+	private Handler handler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +38,8 @@ public class TimerScreen extends Activity{
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-		
-		//we need to get a handler associated with the main thread (we declared it therein the Main thread)
-		handler = new Handler();
-	}
-	
 
+	}
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
@@ -47,52 +57,46 @@ public class TimerScreen extends Activity{
 		}
 	}
 	
-	// this function is called at the start of the progress bar's movement 
-	public void startprogress(View v){
-		// get a handle onto the progress bar
-		ProgressBar bar = (ProgressBar)findViewById(R.id.progressBar1);
-		//so its progress is set to 0
-		bar.setProgress(0);
-		//now we create a thread, link it to a defined "task" and start it
-		new Thread(new Task()).start();
+	public void start(View v){
+		//milliseconds since boot, not counting time spent in deep sleep 
+		//this is used as a BASE, we count FROM this time
+		starttime=SystemClock.uptimeMillis();
+		//adds the "updateTimerThread" runnable object after "0" miliseconds of delay
+		handler.postDelayed(updateTimerThread, 0);
 	}
 	
-	class Task implements Runnable{
-		// get a handle onto the progress bar
-		ProgressBar bar = (ProgressBar)findViewById(R.id.progressBar1);
+	public void pause(View v){
+		buffertime=buffertime+milisecondstime;
+		// basically removes all pending posts of "updateTimerThread" in the message queue
+		handler.removeCallbacks(updateTimerThread);
+	}
+	//now we define the updatetimerthread - a runnable object
+	private Runnable updateTimerThread = new Runnable() {
+		//after the fragment has been instantiated we can safely link the handles to the respective widgets
+		
 
-		@Override  //this is the method inherited from the class Runnable
+		@Override
 		public void run() {
-			// TODO Auto-generated method stub
-			for(int i=0;i<=100;i++){
-				final int value=i;
-				//catch any execeptions thrown by the thread when its "put to sleep"
-				try{
-					Thread.sleep(100); // here the UI thread (because thats *this* thread) is hung for 100 miliseconds
-				} catch(InterruptedException e){ //here we are making the thread support its own interruption
-					//an interrupt is used to inform the thread it should stop what its doing and it should do
-					//something else
-					e.printStackTrace();
-					//this method of handling the interrupt is okay if interrupts happens frequently
-					//but in some cases there isnt a interruption for quite some time
-					//then we check using if(Thread.interrupted()){//handle the interruption}
-					//keep in mind that the interrupt status flag is reset (cleared) when the status is checked
-					// and it is set by the Thread.interrupt
-				}
-				// now here we add a runnable object into the message queue 
-				// here the handler takes this object and shedules its execution
-				// its execution will occur in the thread to with the handler is associated
-				// we define the runnable object as an anonymous inner class
-				handler.post(new Runnable(){
-					@Override
-					public void run(){
-						bar.setProgress(value);
-					}
-				});
-				// you may ask why use a handler, what was wrong with my previous commit, but in android we can only modify the UI elements(widgets) can only be modified in the main thread
-			}
+			currenttime = (TextView) findViewById(R.id.textView1);
+			
+			milisecondstime=SystemClock.uptimeMillis()-starttime;
+			
+			newtime=buffertime+milisecondstime;
+			
+			int sec=(int)(newtime/1000);
+			int mins=sec/60;
+			sec=sec%60;
+			int milisec=(int)(newtime%1000);
+			
+			currenttime.setText(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
+			
+			handler.postDelayed(this, 0);
+			
 		}
 		
-	}
+		
+	};
+
+
 
 }
