@@ -68,7 +68,7 @@ public class TimerScreen extends Activity{
 				final int value=i;
 				//catch any execeptions thrown by the thread when its "put to sleep"
 				try{
-					Thread.sleep(100);
+					Thread.sleep(100); // here the UI thread (because thats *this* thread) is hung for 100 miliseconds
 				} catch(InterruptedException e){ //here we are making the thread support its own interruption
 					//an interrupt is used to inform the thread it should stop what its doing and it should do
 					//something else
@@ -89,6 +89,7 @@ public class TimerScreen extends Activity{
 						bar.setProgress(value);
 					}
 				});
+				// you may ask why use a handler, what was wrong with my previous commit, but in android we can only modify the UI elements(widgets) can only be modified in the main thread
 			}
 		}
 		
