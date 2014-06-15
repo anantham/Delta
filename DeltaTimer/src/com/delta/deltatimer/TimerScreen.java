@@ -37,11 +37,13 @@ public class TimerScreen extends Activity{
 	private Handler handler = new Handler();
 	
 	// the list of strings which cointain the the LAPS
-	List<String> finalresult = new ArrayList<String>();
+	List<String> finallist= new ArrayList<String>();
 
 	// the adapter used to set the listview
 	ArrayAdapter<String> adapter;
 	
+	//this is the handle for listview to be used globally
+	ListView list;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,9 @@ public class TimerScreen extends Activity{
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
+		
+		//so we establish the handle on to the list view inside oncreate
+		list = (ListView)findViewById(android.R.id.list);
 		
 	}
 	/**
@@ -112,21 +117,20 @@ public class TimerScreen extends Activity{
 	public void reset(View v){
 		// we stop the timer
 		pause(v);
-		//we add the value of the timer at that instant to to list
-		//so first we establish the handle on the list view
-		ListView list = (ListView)findViewById(android.R.id.list);
 		
 		int sec=(int)(newtime/1000);
 		int mins=sec/60;
 		sec=sec%60;
 		int milisec=(int)(newtime%1000);
 		
-		finalresult.add(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
-
-		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finalresult);
+		finallist.add(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
 		
+		
+		// made a new adapter with this updated list
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finallist);
+
 		//cause  of crash in reset button!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-		list.setAdapter(adapter);  
+		list.setAdapter(adapter); 
 	
 		// we reset the values of all the timer variables to default
 		starttime =0L;
@@ -134,6 +138,9 @@ public class TimerScreen extends Activity{
 		buffertime=0L;
 		newtime=0L;
 		currenttime.setText("0:00:000");
+		
+		//and now we resume counting, timer restarts
+		start(v);
 	}
 	
 	//now we define the updatetimerthread - a runnable object
@@ -159,6 +166,7 @@ public class TimerScreen extends Activity{
 			
 			currenttime.setText(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
 			
+			//calls its self so this thread is self updating, thus continously keeping the timer updated
 			handler.postDelayed(this, 0);
 			
 		}
