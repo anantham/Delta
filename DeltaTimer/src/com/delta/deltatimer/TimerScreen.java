@@ -98,12 +98,11 @@ public class TimerScreen extends Activity{
 	
 	//function called when reset button is called
 	public void reset(View v){
+	pause(v);
 	starttime =0L;
 	milisecondstime =0L;
 	buffertime=0L;
 	newtime=0L;
-	//we are re-starting the timer, so its running
-	flag=1;
 	start(v);
 	}
 	
