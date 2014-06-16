@@ -35,7 +35,8 @@ public class TimerScreen extends Activity{
 	//and the flag variable to check IF any laps have been recorded
 	int lapflag=0;
 	
-	//the handler which is used to add runnable's to the message queue, this happens on a seperate thread, created here
+	//the handler which is used to add runnable's to the message queue, this happens on a seperate thread thats created here..
+	//here the Handler class is instantiated for supporting multi-threading Through the  default constructor.
 	private Handler handler = new Handler();
 	
 	//the list of lap lengths stored as string arrays 
@@ -90,6 +91,11 @@ public class TimerScreen extends Activity{
 		starttime=SystemClock.uptimeMillis();
 		//adds the "updateTimerThread" runnable object after "0" miliseconds of delay
 		//thus this ensures the time keeps getting updated
+		//ie This Method attaches a runnable instance with its associated thread (the one thats created to handle updating the time)
+		//the body of that runnable instance (ie the run()) will execute every time the thread gets executed 
+		//after a time specified by the second argument.(here that is 0)
+		//so to wrap it up, This line will call the run method of Runnable interface 
+		//instance with reference the "updateTimer" after 0 milliseconds for the very 1st time.
 		handler.postDelayed(updateTimer, 0);
 		
 	}
@@ -184,6 +190,15 @@ public class TimerScreen extends Activity{
 		start(v);
 	}
 	
+	//we should not access the Android UI toolkit from outside the UI thread, This can result in undefined and unexpected behavior, 
+	//which can be difficult and time-consuming to track down.To fix this problem, Android offers several ways to access the UI 
+	//thread from other threads. i used View.postDelayed(Runnable, long)
+	//Regarding the android UI thread: At some point (probably before any activities and the like are created) the framework has set up a Looper 
+	//(containing a MessageQueue) and started it. From this point on, everything that happens on the UI thread is through that loop. 
+	//This includes activity lifecycle management and so on. All callbacks you override (onCreate(), onDestroy()...) are at least 
+	//indirecty dispatched from that loop.
+	//but this doesnt matter as we dont deal with looper right now
+
 	
 	//now we define the updatetimerthread - a runnable object
 	private Runnable updateTimer = new Runnable() {
@@ -207,10 +222,15 @@ public class TimerScreen extends Activity{
 			int mins=sec/60;
 			sec=sec%60;
 			int milisec=(int)(newtime%1000);
-			
-			//stores the time in the appropriate format into currenttime
-			currenttime.setText(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
-			
+			/*
+			 * as i have explained before the Runnable updateTimer's definition i have talked in detail about how we are asked to modify 
+			 * ui elements in the ui thread itself. so instead of this --- i am going to call a function on the ui thread which does exactly this
+			 * //stores the time in the appropriate format into currenttime
+			 * currenttime.setText(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
+			 * Thus we shift the updation to the ui thread but
+			 * the calculation and the "calling" of the updating is done by the new thread
+			*/
+			setthetime(mins,sec,milisec);
 			//calls its self so this thread is self updating, thus continously keeping the timer updated
 			handler.postDelayed(this, 0);
 
@@ -218,6 +238,10 @@ public class TimerScreen extends Activity{
 		
 		
 	};
+	
+	public void setthetime(int mins,int sec,int milisec){
+		currenttime.setText(""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
+	}
 	
 	// we clear the adapter and reset the no of lap to 0
 	public void clear(View v){
