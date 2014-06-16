@@ -144,7 +144,11 @@ public class TimerScreen extends Activity{
 
 		//adapter.add(lap+currenttime.toString());
 		
-		//list.setAdapter(adapter);
+		
+		String[] x = new String[]{"AAA","BBB","CCC"};
+		ListView lv = (ListView) findViewById(R.id.list);
+		ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,x);
+		lv.setAdapter(test);
 
 	
 		// we reset the values of all the timer variables to default
