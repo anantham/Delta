@@ -236,7 +236,13 @@ public class TimerScreen extends Activity{
 		//then we exit
 		System.exit(0);
 	}
-
-
-
+	//to stop the crashing which occurs when we exit the app using the back key while the timer is running
+	//i override the ondestroy which is called when the back button is clicked and stop the thread which updates the time and itself
+	@Override
+	protected void onDestroy() {
+		//first we need to  call up to the superclass
+		super.onDestroy();
+		handler.removeCallbacks(updateTimer);
+	}
+	
 }
