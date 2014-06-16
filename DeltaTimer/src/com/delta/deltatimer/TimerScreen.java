@@ -134,6 +134,7 @@ public class TimerScreen extends Activity{
 		String lap=Integer.toString(laps);
 		// Add item to adapter
 		time newUser = new time(lap, currenttime.toString());
+		arrayOfUsers.add(newUser);
 		// Create the adapter to convert the array to views
 		TimeAdapter adapter = new TimeAdapter(this, arrayOfUsers);
 		// Attach the adapter to a ListView
