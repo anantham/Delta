@@ -9,5 +9,7 @@
     <string name="timer">0:00:000</string>
     <string name="pause">Pause</string>
     <string name="reset">Reset</string>
+    <string name="clear">Clear</string>
+    <string name="exit">Exit Now</string>
 
 </resources>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,7 +47,7 @@ public class TimerScreen extends Activity{
     int laps=0;
     
     //the adapter
-    ArrayAdapter<String> adapter;
+    ArrayAdapter<String> test;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +71,6 @@ public class TimerScreen extends Activity{
 		// Add item to adapter
 		//arrayOfUsers.add(lap+currenttime.toString());
 		// Create the adapter to convert the array to views
-		String[]values={"Android","iOS","Windows Phone","Other Stuff"};
-		adapter=new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,values);
-		//listView.setAdapter(adapter);
 	
 	}
 	/**
@@ -165,7 +163,7 @@ public class TimerScreen extends Activity{
 		
 		
 		ListView lv = (ListView) findViewById(R.id.list);
-		ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,arrayOfUsers){
+		test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,arrayOfUsers){
 
 	        @Override
 	        public View getView(int position, View convertView,
@@ -227,6 +225,18 @@ public class TimerScreen extends Activity{
 		
 		
 	};
+	
+	public void clear(View v){
+		test.clear();
+		laps=0;
+	}
+	
+	public void exit(View v){
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent);
+	}
 
 
 
