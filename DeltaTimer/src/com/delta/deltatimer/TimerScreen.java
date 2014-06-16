@@ -130,11 +130,10 @@ public class TimerScreen extends Activity{
 		
 		finallist.add("0:00:000");
 		// made a new adapter with this updated list
-		//this refers to activity context
-		//android.R.layout.simple_list_item_1 simple_list_item_1 is the layout in android.R.layout.
-		//android.R.id.textView1 refers to the android resource id.
-		//finallist is a string array for the lap durations
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,R.id.textView1,finallist);
+		//this refers to the activity context
+		//android.R.layout.simple_list_item_1 simple_list_item_1 is the layout in android.R.layout, (xml resource)
+		//finallist is a string array for the lap durations (data array)
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finallist);
 
 		//UNABLE TO SET THE LIST WITH THIS ADAPTER
 		//cause  of crash in reset button!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
