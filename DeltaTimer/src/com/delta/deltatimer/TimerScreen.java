@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,9 +17,9 @@ import android.widget.TextView;
 
 
 public class TimerScreen extends Activity{
+	
 	//we use private in the following variables, as they will be used inside the TimerScreen Class
 
-	
 	//now the timer value, ie the Current Recorded Time thats going to be recorded in textview (the output format)
 	TextView currenttime;
 	
@@ -33,21 +32,20 @@ public class TimerScreen extends Activity{
 	
 	//the flag variable for the timer,its value is 0 when its NOT running,and 1 when it is 
 	int flag=0;
+	//and the flag variable to check IF any laps have been recorded
+	int lapflag=0;
 	
 	//the handler which is used to add runnable's to the message queue, this happens on a seperate thread, created here
 	private Handler handler = new Handler();
 	
-	//the handle onto the listview
-	ListView list;
-	
-	//the list of lap lengths stored as arrays
-	ArrayList<String> arrayOfUsers= new ArrayList<String>();
+	//the list of lap lengths stored as string arrays 
+	ArrayList<String> arrayOflaps= new ArrayList<String>();
 
     //the no of laps recorded can be kept count of
     int laps=0;
     
     //the adapter
-    ArrayAdapter<String> test;
+    ArrayAdapter<String> adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,19 +57,6 @@ public class TimerScreen extends Activity{
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
-		
-		//so we establish the handle on to the list view inside oncreate
-		//list = (ListView)findViewById(android.R.id.list);
-		// made a new adapter with this updated list
-		//this refers to the activity context
-		//android.R.layout.simple_list_item_1 simple_list_item_1 is the layout in android.R.layout, (xml resource)
-		//finallist is a string array for the lap durations (data array)
-		//ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finallist);
-		//adapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, arrayOfUsers);
-		// Add item to adapter
-		//arrayOfUsers.add(lap+currenttime.toString());
-		// Create the adapter to convert the array to views
-	
 	}
 	/**
 	 * A placeholder fragment containing a simple view.
@@ -116,7 +101,7 @@ public class TimerScreen extends Activity{
 			return;
 		}
 		
-		//timer is paused
+		//as the timer is paused
 		flag=0;
 		//here buffertime is the time spent while in the paused state, intially that is zero so is milisecondstime
 		//but after its paused
@@ -128,6 +113,12 @@ public class TimerScreen extends Activity{
 	
 	//function called when reset button is called
 	public void reset(View v){
+		//in the case the timer is yet to be started, it cant be re-set unless its already set
+		if(newtime==0L){
+			return;
+		}
+		//as a lap has been recorded
+		lapflag=1;
 		//in the case that the timer is not running we shouldnt just start the timer
 		if(flag==0){
 			// we reset the values of all the timer variables to default
@@ -141,9 +132,9 @@ public class TimerScreen extends Activity{
 		}
 		// we stop the timer
 		pause(v);
-		// we set a lap to be stored
+		// we increment the number of laps
 		laps++;
-		
+		//get the "number of laps" as a string
 		String lap=Integer.toString(laps);
 		
 		//we obtain the breakup of the time in min, secs, and miliseconds
@@ -152,18 +143,18 @@ public class TimerScreen extends Activity{
 		sec=sec%60;
 		int milisec=(int)(newtime%1000);
 		
+		//we obtain the lap time in the string format
 		String strtime=""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec);
 		
-		
-		arrayOfUsers.add("Lap No:"+lap+"   "+strtime);
-		
-		//adapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, arrayOfUsers);
-
-		//adapter.add(lap+currenttime.toString());
-		
-		
-		ListView lv = (ListView) findViewById(R.id.list);
-		test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,arrayOfUsers){
+		//we catanate both the nth lap no and that lap time and append it to the arrayoflaps
+		arrayOflaps.add("Lap No:"+lap+"   "+strtime);
+			
+		//we get lv a handler onto the list point to our "list"
+		ListView list = (ListView) findViewById(R.id.list);
+		//we define adapter which gets the data from arrayoflaps and converts it into a diplayable format
+		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,arrayOflaps){
+			//here as I faced a problem with not able to see the listview elements as its text colour is by default black i use this 
+			//While instantiating this adapter here, i declare this inner class to set the list's text view elements color as white
 
 	        @Override
 	        public View getView(int position, View convertView,
@@ -171,14 +162,15 @@ public class TimerScreen extends Activity{
 	            View view =super.getView(position, convertView, parent);
 
 	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
-
-	            /*YOUR CHOICE OF COLOR*/
+	            
+	            //doesnt have to be white, u can choose
 	            textView.setTextColor(Color.WHITE);
 
 	            return view;
 	        }
 	    };
-		lv.setAdapter(test);
+	    //finally we set the adapter to the listview via the lv
+		list.setAdapter(adapter);
 
 	
 		// we reset the values of all the timer variables to default
@@ -201,7 +193,8 @@ public class TimerScreen extends Activity{
 		@Override
 		public void run() {
 			// sets the currenttime handler to point to textview1 so we can set the text there
-			currenttime = (TextView) findViewById(R.id.textView1);
+		    currenttime = (TextView) findViewById(R.id.textView1);
+			
 			
 			//this the difference between how much time actually elapsed to how much time the timer has been running (ie starttime)
 			milisecondstime=SystemClock.uptimeMillis()-starttime;
@@ -226,16 +219,22 @@ public class TimerScreen extends Activity{
 		
 	};
 	
+	// we clear the adapter and reset the no of lap to 0
 	public void clear(View v){
-		test.clear();
+		if(lapflag==0){
+			//in the case there is no list to clear
+			return;
+		}
+		adapter.clear();
 		laps=0;
 	}
 	
+	//we launch a intent to the home screen to exit the app
 	public void exit(View v){
-		Intent intent = new Intent(Intent.ACTION_MAIN);
-		intent.addCategory(Intent.CATEGORY_HOME);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(intent);
+		//before we exit we need to STOP the damn thread as even if the application is closed the timer keeps running in the background
+		handler.removeCallbacks(updateTimer);
+		//then we exit
+		System.exit(0);
 	}
 
 
