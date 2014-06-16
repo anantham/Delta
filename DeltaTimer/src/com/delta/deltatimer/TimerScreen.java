@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -60,8 +61,6 @@ public class TimerScreen extends Activity{
 		
 		//so we establish the handle on to the list view inside oncreate
 		//list = (ListView)findViewById(android.R.id.list);
-		
-		arrayOfUsers.add("0:00:000");
 		// made a new adapter with this updated list
 		//this refers to the activity context
 		//android.R.layout.simple_list_item_1 simple_list_item_1 is the layout in android.R.layout, (xml resource)
@@ -131,6 +130,17 @@ public class TimerScreen extends Activity{
 	
 	//function called when reset button is called
 	public void reset(View v){
+		//in the case that the timer is not running we shouldnt just start the timer
+		if(flag==0){
+			// we reset the values of all the timer variables to default
+			starttime =0L;
+			milisecondstime =0L;
+			buffertime=0L;
+			newtime=0L;
+			currenttime.setText("0:00:000");
+			// and we can just safely exit
+			return;
+		}
 		// we stop the timer
 		pause(v);
 		// we set a lap to be stored
@@ -138,16 +148,38 @@ public class TimerScreen extends Activity{
 		
 		String lap=Integer.toString(laps);
 		
-		arrayOfUsers.add(lap+currenttime.toString());
+		//we obtain the breakup of the time in min, secs, and miliseconds
+		int sec=(int)(newtime/1000);
+		int mins=sec/60;
+		sec=sec%60;
+		int milisec=(int)(newtime%1000);
+		
+		String strtime=""+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec);
+		
+		
+		arrayOfUsers.add("Lap No:"+lap+"   "+strtime);
 		
 		//adapter= new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, arrayOfUsers);
 
 		//adapter.add(lap+currenttime.toString());
 		
 		
-		String[] x = new String[]{"AAA","BBB","CCC"};
 		ListView lv = (ListView) findViewById(R.id.list);
-		ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,x);
+		ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,arrayOfUsers){
+
+	        @Override
+	        public View getView(int position, View convertView,
+	                ViewGroup parent) {
+	            View view =super.getView(position, convertView, parent);
+
+	            TextView textView=(TextView) view.findViewById(android.R.id.text1);
+
+	            /*YOUR CHOICE OF COLOR*/
+	            textView.setTextColor(Color.WHITE);
+
+	            return view;
+	        }
+	    };
 		lv.setAdapter(test);
 
 	
