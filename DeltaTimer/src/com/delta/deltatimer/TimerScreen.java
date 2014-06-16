@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -119,21 +120,27 @@ public class TimerScreen extends Activity{
 		pause(v);
 		// we set a lap to be stored
 		laps++;
-
-		//here we break up the current time into output format min:Sec:milisec
-		int sec=(int)(newtime/1000);
-		int mins=sec/60;
-		sec=sec%60;
-		int milisec=(int)(newtime%1000);
-		//we get the element which is to be added to the list
-		finallist.add("Lap Number-"+laps+" "+mins+":"+ String.format("%02d", sec) + ":"+ String.format("%03d", milisec));
 		
-		finallist.add("0:00:000");
 		// made a new adapter with this updated list
 		//this refers to the activity context
 		//android.R.layout.simple_list_item_1 simple_list_item_1 is the layout in android.R.layout, (xml resource)
 		//finallist is a string array for the lap durations (data array)
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finallist);
+		//ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,finallist);
+		
+		//attaching the adapter to the list view
+		// Construct the data source
+		ArrayList<time> arrayOfUsers = new ArrayList<time>();
+		//adding to the list
+		String lap=Integer.toString(laps);
+		// Add item to adapter
+		time newUser = new time(lap, currenttime.toString());
+		// Create the adapter to convert the array to views
+		TimeAdapter adapter = new TimeAdapter(this, arrayOfUsers);
+		// Attach the adapter to a ListView
+		ListView listView = (ListView) findViewById(R.id.list);
+		listView.setAdapter(adapter);
+		
+		adapter.add(newUser);
 
 		//UNABLE TO SET THE LIST WITH THIS ADAPTER
 		//cause  of crash in reset button!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
@@ -149,6 +156,45 @@ public class TimerScreen extends Activity{
 		//and now we resume counting, timer restarts
 		start(v);
 	}
+	
+	//for us to use a Custom ArrayAdapter
+	//we need to first define the model
+	public class time {
+		public String lapno;
+		public String timertime;
+		
+		public time(String lapno, String timertime){
+			//we set the default values for both the strings inside the constructor
+			this.lapno="0";
+			this.timertime="0:00:000";
+		}
+		//We can now create a custom listview of user objects by subclassing ArrayAdapter, 
+		//describing how to translate the object into a view within that class and then using it like any other adapter (ie like the ArrayAdapter<String>)
+	}
+	//once we have DEFINED a model
+	// we now CONSTRUCT the model -?-
+	//and now define the adapter
+	public class TimeAdapter extends ArrayAdapter<time> {
+	    public TimeAdapter(Context context, ArrayList<time> users) {
+	       super(context, R.layout.fragment_timer_screen, users);
+	    }
+
+	    @Override
+	    public View getView(int position, View convertView, ViewGroup parent) {
+	       // Get the data item for this position
+	       time user = getItem(position);    
+	       // Check if an existing view is being reused, otherwise inflate the view
+	       if (convertView == null) {
+	          convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_timer_screen, parent, false);
+	       }
+	       // Lookup view for data population
+	       TextView tvHome = (TextView) convertView.findViewById(R.id.textView1);
+	       tvHome.setText(user.timertime);
+	       // Return the completed view to render on screen
+	       return convertView;
+	   }
+	}
+	
 	
 	//now we define the updatetimerthread - a runnable object
 	private Runnable updateTimer = new Runnable() {
