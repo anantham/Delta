@@ -268,5 +268,4 @@ public class TimerScreen extends Activity{
 		super.onDestroy();
 		handler.removeCallbacks(updateTimer);
 	}
-	
 }
